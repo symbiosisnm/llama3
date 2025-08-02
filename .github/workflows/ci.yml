@@ -1,0 +1,54 @@
+name: LLM Pipeline CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: pip
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r business_requirements.txt
+
+    - name: Run import tests
+      env:
+        MODEL_PATH: "./dummy_model"
+        CHROMA_DIR: "./dummy_chroma"
+        COLLECTION_NAME: "test"
+      run: |
+        python - <<'EOF'
+        import importlib
+        modules = [
+            'scripts.sft_train',
+            'scripts.rlhf_trainer',
+            'scripts.rag_pipeline',
+            'scripts.reward_model',
+            'scripts.data_cleaning',
+            'scripts.pipeline_manager',
+            'scripts.tokenizer_training',
+            'scripts.evaluate_model',
+            'scripts.feedback_collector',
+        ]
+        for mod in modules:
+            importlib.import_module(mod)
+            print(f'Imported {mod}')
+        print('All modules imported successfully.')
+        EOF
