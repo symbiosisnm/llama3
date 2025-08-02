@@ -1,0 +1,13 @@
+torch
+transformers
+datasets
+accelerate
+peft
+deepspeed
+sentence-transformers
+chromadb
+fastapi
+uvicorn
+wandb
+numpy
+pandas
