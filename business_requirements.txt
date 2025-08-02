@@ -11,3 +11,5 @@ uvicorn
 wandb
 numpy
 pandas
+evaluate
+tokenizers
