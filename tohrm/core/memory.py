@@ -1,30 +1,57 @@
-# Memory abstractions for transient, episodic, and long-term storage.
-from typing import Any, Dict, List
 import pickle
 import datetime
+from typing import Any, Dict, List
 
 class WorkingMemory:
-    def __init__(self):
+    """Temporary key-value storage for intermediate reasoning results."""
+    def __init__(self) -> None:
         self.slots: Dict[str, Any] = {}
 
-    def store(self, key: str, value: Any):
-        # TODO: store intermediate results
-        pass
+    def store(self, key: str, value: Any) -> None:
+        """Store a value under a key."""
+        self.slots[key] = value
 
     def retrieve(self, key: str) -> Any:
-        # TODO: return stored value or None
-        pass
+        """Retrieve a value by key, or None if absent."""
+        return self.slots.get(key)
 
-    def clear(self):
-        # TODO: wipe working memory
-        pass
+    def clear(self) -> None:
+        """Clear all stored values."""
+        self.slots.clear()
 
 class EpisodicMemory:
-    """Stores chronological logs of reasoning episodes and persists them."""
-    # TODO: maintain a list of episode logs with timestamps and persist to disk
-    pass
+    """Chronological log of episodes with timestamps that can be persisted."""
+    def __init__(self) -> None:
+        self.episodes: List[Dict[str, Any]] = []
+
+    def log(self, entry: Dict[str, Any]) -> None:
+        """Record an entry with a UTC timestamp."""
+        entry['timestamp'] = str(datetime.datetime.utcnow())
+        self.episodes.append(entry)
+
+    def recall_recent(self, n: int = 5) -> List[Dict[str, Any]]:
+        """Return the last n logged episodes."""
+        return self.episodes[-n:]
+
+    def save(self, path: str) -> None:
+        """Persist episodes to disk via pickle."""
+        with open(path, 'wb') as f:
+            pickle.dump(self.episodes, f)
+
+    def load(self, path: str) -> None:
+        """Load episodes from disk."""
+        with open(path, 'rb') as f:
+            self.episodes = pickle.load(f)
 
 class SemanticMemory:
-    """Long-term facts storage mapping keys to values."""
-    # TODO: simple dictionary for long-term facts (add_fact/get_fact)
-    pass
+    """Long-term storage mapping facts to their values."""
+    def __init__(self) -> None:
+        self.facts: Dict[str, Any] = {}
+
+    def add_fact(self, key: str, value: Any) -> None:
+        """Add or update a fact."""
+        self.facts[key] = value
+
+    def get_fact(self, key: str) -> Any:
+        """Retrieve a fact by key, or None if absent."""
+        return self.facts.get(key)
