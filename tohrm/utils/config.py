@@ -16,3 +16,8 @@ class HRMConfig:
     tol: float = 1e-3
     use_middle: bool = False
     adaptive_halting: bool = False
+    dropout_rate: float = 0.1
+    use_reward_hook: bool = False
+    use_retrieval_hook: bool = False
+    reward_threshold: Optional[float] = None
+    max_episodes: Optional[int] = None
