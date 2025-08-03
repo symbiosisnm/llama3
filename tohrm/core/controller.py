@@ -82,3 +82,22 @@ class ReasoningController:
         norms = [{'h': t['h'].norm().item(), 'l': t['l'].norm().item()} for t in trace]
         stable = all(abs(norms[i]['l'] - norms[i-1]['l']) < 1e-2 for i in range(1, len(norms)))
         return {'norms': norms, 'stable': stable}
+
+    def summarize_trace(self, trace: List[Dict]) -> Dict[str, float]:
+        """
+        Compute summary statistics (mean and max norms) from the trace for interpretability.
+
+        Args:
+            trace: List of cycle dictionaries with 'h' and 'l' latent tensors.
+
+        Returns:
+            A dictionary with mean and max L2 norms for h and l across cycles.
+        """
+        h_norms = [t['h'].norm().item() for t in trace]
+        l_norms = [t['l'].norm().item() for t in trace]
+        return {
+            'h_mean_norm': float(sum(h_norms) / len(h_norms)) if h_norms else 0.0,
+            'h_max_norm': float(max(h_norms)) if h_norms else 0.0,
+            'l_mean_norm': float(sum(l_norms) / len(l_norms)) if l_norms else 0.0,
+            'l_max_norm': float(max(l_norms)) if l_norms else 0.0,
+        }
