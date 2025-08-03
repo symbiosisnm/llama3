@@ -18,16 +18,25 @@ class WorkingMemory:
     def clear(self) -> None:
         """Clear all stored values."""
         self.slots.clear()
+            def retrieve_prefix(self, prefix: str) -> Dict[str, Any]:
+        """Return key-value pairs where the key starts with the given prefix."""
+        return {k: v for k, v in self.slots.items() if k.startswith(prefix)}
+
 
 class EpisodicMemory:
     """Chronological log of episodes with timestamps that can be persisted."""
-    def __init__(self) -> None:
+    def __init__(self, max_episodes: int | None = None) -> None:
         self.episodes: List[Dict[str, Any]] = []
+                self.max_episodes = max_episodes
+              
 
     def log(self, entry: Dict[str, Any]) -> None:
         """Record an entry with a UTC timestamp."""
+             
         entry['timestamp'] = str(datetime.datetime.utcnow())
         self.episodes.append(entry)
+                if self.max_episodes is not None and len(self.episodes) > self.max_episodes:
+            self.episodes.pop(0)
 
     def recall_recent(self, n: int = 5) -> List[Dict[str, Any]]:
         """Return the last n logged episodes."""
