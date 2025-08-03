@@ -34,6 +34,17 @@ class Thought:
     def __repr__(self):
         return json.dumps(self.to_dict(), indent=2)
 
+    def update_state(self, new_state: str, metadata_update: Optional[Dict[str, Any]] = None) -> None:
+        """Update the state of this thought and optionally merge new metadata.
+
+        Args:
+            new_state: The new state string (e.g., 'executed', 'failed').
+            metadata_update: Optional dict of metadata to merge with existing metadata.
+        """
+        self.state = new_state
+        if metadata_update:
+            self.metadata.update(metadata_update)
+
 class ThoughtBuffer:
     def __init__(self):
         self.thoughts: List[Thought] = []
